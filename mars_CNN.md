@@ -8,7 +8,7 @@ Name: Alexander Neal, netID: ajn170130
 ## **Import Libraries**
 
 
-```
+```python
 # TensorFlow and tf.keras
 from tensorflow import keras
 from tensorflow.keras import layers
