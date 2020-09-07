@@ -18,7 +18,7 @@ We begin by importing the required modules. These include:
 
 
 
-```
+```python
 from tensorflow import keras
 from tensorflow.keras import layers
 !pip install -U keras-tuner
@@ -63,7 +63,7 @@ The dataset includes two files and a folder of images. The first file, `landmark
 
 
 
-```
+```python
 class_map = {0: 'other',
              1: 'crater',
              2: 'dark_dune',
@@ -76,7 +76,7 @@ class_map = {0: 'other',
 The second file, `labels-map-proj.txt`, contains each image filename along with its correspondong class label, separated by a space. The first task is to partition these lines randomly into the training, validation, and test sets. We use the same proportions as the original authors: 70%, 15%, and 15% for the training, validation, and test sets, respectively.
 
 
-```
+```python
 lines = urlopen('https://ajndata.s3.us-east-2.amazonaws.com/hirise/labels-map-proj.txt').read().decode('utf-8').strip().split('\n')
 #lines = file.readlines()
 #file.close()
@@ -88,7 +88,7 @@ val, test = train_test_split(not_train, test_size=0.5)
 Next, we import the image data and store them and the labels in NumPy arrays.
 
 
-```
+```python
 img_url = 'https://ajndata.s3.us-east-2.amazonaws.com/hirise/map-proj/'
 
 def get_image(url):
@@ -145,7 +145,7 @@ test_images, test_labels = get_set(test)
 Let's have a look at the range of pixel values in the data.
 
 
-```
+```python
 print(train_images.min(), train_images.max())
 ```
 
@@ -155,7 +155,7 @@ print(train_images.min(), train_images.max())
 This is the standard scaling for pixel intensity in JPEG images. Before feeding them to the network, we want to normalize these values to be in the range [0,1].
 
 
-```
+```python
 train_images = train_images/255.0
 val_images = val_images/255.0
 test_images = test_images/255.0
@@ -164,7 +164,7 @@ test_images = test_images/255.0
 Using the image data and the previously defined class map, we can plot some of the images to get an idea of the types of images we are dealing with. 
 
 
-```
+```python
 plt.figure(figsize=(10,10))
 for i in range(15):
     plt.subplot(5,5,i+1)
@@ -183,7 +183,7 @@ plt.show()
 The edge category seems like it may be more common than the others. Let's take a look at the distribution of the labels in the training set. 
 
 
-```
+```python
 def plot_class_dist(labels, title):
   classes, counts = np.unique(labels, return_counts=True)
   classes = [class_map[label] for label in classes]
@@ -210,7 +210,7 @@ plt.show()
 Before we can start training the neural net, there is one last step. If we look at the shape of the image data, we see that each example is a 227x227 array.
 
 
-```
+```python
 print(train_images.shape, val_images.shape, test_images.shape)
 ```
 
@@ -220,7 +220,7 @@ print(train_images.shape, val_images.shape, test_images.shape)
 The Keras Conv2D layer expects each training example to be a 3D tensor in which the first two dimensions are the length and width of the image, and the third dimension is the number of channels. Since these are grayscale images, they only have a single channel. We can simply reshape the arrays to add this dimension.
 
 
-```
+```python
 train_images = train_images.reshape((train_images.shape[0],227,227,1))
 val_images = val_images.reshape((val_images.shape[0],227,227,1))
 test_images = test_images.reshape((test_images.shape[0],227,227,1))
@@ -252,7 +252,7 @@ The following code block is model building function that defines the above hyper
 
 
 
-```
+```python
 def build_model(hp):
     model = keras.Sequential()
 
@@ -312,7 +312,7 @@ def build_model(hp):
 This function is used to initialize the random search tuner. We'll instruct the tuner select the hyperparameters that produce the highest validation accuracy during the tuning process. We'll tell it to try 40 different sets of hyperparameters, and repeat each trial three times for a higher degree of reliability.
 
 
-```
+```python
 tuner = RandomSearch(
     build_model,
     objective='val_accuracy',
@@ -328,7 +328,7 @@ tuner = RandomSearch(
 This callback function will clear the output after each trial.
 
 
-```
+```python
 class ClearTrainingOutput(keras.callbacks.Callback):
   def on_train_end(*args, **kwargs):
     IPython.display.clear_output(wait = True)
@@ -338,7 +338,7 @@ class ClearTrainingOutput(keras.callbacks.Callback):
 Finally, we let the tuner work its magic. Each trial can be up to 30 epochs (in initial experiments, the network tended to converge in less than 20 epochs). We'll also pass an early stopping callback to halt training early if validation loss begins to increase.
 
 
-```
+```python
 tuner.search(train_images, train_labels, 
              validation_data=(val_images, val_labels),
              epochs=30,
@@ -467,7 +467,7 @@ tuner.search(train_images, train_labels,
 Now we retrieve the set of hyperparameters that achieved the highest performance during the tuning.
 
 
-```
+```python
 best_hp = tuner.get_best_hyperparameters()[0]
 
 best_model = tuner.hypermodel.build(best_hp)
@@ -515,7 +515,7 @@ best_model.summary()
 The summary above does not include the stride for the first convolutional layer, the filter sizes for all convolutional layers, the learning rate, or the optimizer. We can retrieve each of these hyperparemeter selections as follows:
 
 
-```
+```python
 
 # Get filter sizes
 for i in range(best_hp.get('num_conv_layers')+1):
@@ -542,7 +542,7 @@ print('Optimizer: ', best_hp.get('optimizer'))
 Now it is time to train the final model. Again, we pass an early stopping callback to optimize the number of epochs.
 
 
-```
+```python
 history = best_model.fit(train_images, train_labels, epochs=30,
                 validation_data=(val_images, val_labels),
                 callbacks=[keras.callbacks.EarlyStopping(monitor='val_loss', patience=4)])
@@ -603,7 +603,7 @@ history = best_model.fit(train_images, train_labels, epochs=30,
 Let's visualize the training history. The following code, adapted from [Jason Brownlee's article](https://machinelearningmastery.com/display-deep-learning-model-training-history-in-keras/), plots loss and accuracy as a function of epochs for both the training and validation sets.
 
 
-```
+```python
 
 plt.figure(figsize=(15,5))
 plt.subplot(1,2,1)
@@ -638,7 +638,7 @@ plt.show()
 Now for the moment of truth: evaluating the model's accuracy on the test set.**bold text**
 
 
-```
+```python
 test_loss, test_accuracy = best_model.evaluate(test_images, test_labels)
 print(test_accuracy)
 ```
@@ -654,21 +654,21 @@ print(test_accuracy)
 We'll conclude by visualizing the model's decisions. We pass the test image data to the model's `predict` function to get the predicted class probabilities for each example.
 
 
-```
+```python
 predictions = best_model.predict(test_images)
 ```
 
 To plot the images, we need to remove the extra channel dimension we added earlier.
 
 
-```
+```python
 test_images_2d = test_images.reshape((test_images.shape[:-1]))
 ```
 
 Using code from [this TensorFlow tutorial](https://www.tensorflow.org/tutorials/keras/classification), we visualize the first 10 predictions.
 
 
-```
+```python
 def plot_image(i, predictions_array, true_label, img):
   predictions_array, true_label, img = predictions_array, true_label[i], img[i]
   plt.grid(False)
@@ -721,7 +721,7 @@ plt.show()
 *** comment on predictions ***
 
 
-```
+```python
 pred_labels = predictions.argmax(axis=1)
 
 cm = confusion_matrix(test_labels, pred_labels, normalize='true')
