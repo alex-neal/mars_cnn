@@ -21,7 +21,6 @@ We begin by importing the required modules. These include:
 ```python
 from tensorflow import keras
 from tensorflow.keras import layers
-!pip install -U keras-tuner
 from kerastuner.tuners import RandomSearch
 import numpy as np
 import matplotlib.pyplot as plt
@@ -33,24 +32,6 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 import IPython
 ```
-
-    Requirement already up-to-date: keras-tuner in /usr/local/lib/python3.6/dist-packages (1.0.1)
-    Requirement already satisfied, skipping upgrade: scikit-learn in /usr/local/lib/python3.6/dist-packages (from keras-tuner) (0.22.2.post1)
-    Requirement already satisfied, skipping upgrade: numpy in /usr/local/lib/python3.6/dist-packages (from keras-tuner) (1.18.5)
-    Requirement already satisfied, skipping upgrade: tqdm in /usr/local/lib/python3.6/dist-packages (from keras-tuner) (4.41.1)
-    Requirement already satisfied, skipping upgrade: tabulate in /usr/local/lib/python3.6/dist-packages (from keras-tuner) (0.8.7)
-    Requirement already satisfied, skipping upgrade: future in /usr/local/lib/python3.6/dist-packages (from keras-tuner) (0.16.0)
-    Requirement already satisfied, skipping upgrade: terminaltables in /usr/local/lib/python3.6/dist-packages (from keras-tuner) (3.1.0)
-    Requirement already satisfied, skipping upgrade: requests in /usr/local/lib/python3.6/dist-packages (from keras-tuner) (2.23.0)
-    Requirement already satisfied, skipping upgrade: colorama in /usr/local/lib/python3.6/dist-packages (from keras-tuner) (0.4.3)
-    Requirement already satisfied, skipping upgrade: scipy in /usr/local/lib/python3.6/dist-packages (from keras-tuner) (1.4.1)
-    Requirement already satisfied, skipping upgrade: joblib>=0.11 in /usr/local/lib/python3.6/dist-packages (from scikit-learn->keras-tuner) (0.16.0)
-    Requirement already satisfied, skipping upgrade: certifi>=2017.4.17 in /usr/local/lib/python3.6/dist-packages (from requests->keras-tuner) (2020.6.20)
-    Requirement already satisfied, skipping upgrade: idna<3,>=2.5 in /usr/local/lib/python3.6/dist-packages (from requests->keras-tuner) (2.10)
-    Requirement already satisfied, skipping upgrade: urllib3!=1.25.0,!=1.25.1,<1.26,>=1.21.1 in /usr/local/lib/python3.6/dist-packages (from requests->keras-tuner) (1.24.3)
-    Requirement already satisfied, skipping upgrade: chardet<4,>=3.0.2 in /usr/local/lib/python3.6/dist-packages (from requests->keras-tuner) (3.0.4)
-
-
 
 
 ---
@@ -346,122 +327,7 @@ tuner.search(train_images, train_labels,
 ```
 
 
-<span style="color:#4527A0"><h1 style="font-size:18px">Trial complete</h1></span>
 
-
-
-<span style="color:#4527A0"><h1 style="font-size:18px">Trial summary</h1></span>
-
-
-
-<span style="color:cyan"> |-Trial ID: 04823412f9bb23c8b3dafc01fe7c80eb</span>
-
-
-
-<span style="color:cyan"> |-Score: 0.8440954089164734</span>
-
-
-
-<span style="color:cyan"> |-Best step: 0</span>
-
-
-
-<span style="color:#7E57C2"><h2 style="font-size:16px">Hyperparameters:</h2></span>
-
-
-
-<span style="color:cyan"> |-dense_units_1: 256</span>
-
-
-
-<span style="color:blue"> |-dense_units_2: 128</span>
-
-
-
-<span style="color:cyan"> |-dense_units_3: 64</span>
-
-
-
-<span style="color:blue"> |-dense_units_4: 384</span>
-
-
-
-<span style="color:cyan"> |-dropout_dense_1: 1</span>
-
-
-
-<span style="color:blue"> |-dropout_dense_2: 1</span>
-
-
-
-<span style="color:cyan"> |-dropout_dense_3: 1</span>
-
-
-
-<span style="color:blue"> |-dropout_dense_4: 1</span>
-
-
-
-<span style="color:cyan"> |-filters_1: 96</span>
-
-
-
-<span style="color:blue"> |-filters_2: 64</span>
-
-
-
-<span style="color:cyan"> |-filters_3: 96</span>
-
-
-
-<span style="color:blue"> |-filters_4: 96</span>
-
-
-
-<span style="color:cyan"> |-filters_5: 128</span>
-
-
-
-<span style="color:blue"> |-filtersize_1: 3</span>
-
-
-
-<span style="color:cyan"> |-filtersize_2: 3</span>
-
-
-
-<span style="color:blue"> |-filtersize_3: 3</span>
-
-
-
-<span style="color:cyan"> |-filtersize_4: 5</span>
-
-
-
-<span style="color:blue"> |-filtersize_5: 5</span>
-
-
-
-<span style="color:cyan"> |-learning_rate: 0.001</span>
-
-
-
-<span style="color:blue"> |-num_conv_layers: 2</span>
-
-
-
-<span style="color:cyan"> |-num_dense_layers: 3</span>
-
-
-
-<span style="color:blue"> |-optimizer: rmsprop</span>
-
-
-
-<span style="color:cyan"> |-strides_1: 2</span>
-
-
-    INFO:tensorflow:Oracle triggered exit
 
 
 Now we retrieve the set of hyperparameters that achieved the highest performance during the tuning.
