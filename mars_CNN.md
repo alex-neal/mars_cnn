@@ -34,10 +34,6 @@ import IPython
 ```
 
 
----
-
-
-
 ## **Data Import and Preprocessing**
 
 The dataset includes two files and a folder of images. The first file, `landmarks_mp.py`, contains a dictionary for mapping the numeric class labels to the class names. We'll add this to the execution environment for later use.
