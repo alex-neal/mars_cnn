@@ -1,7 +1,7 @@
 # Mars Surface Image Classification
 
 
-The HiRise Orbital Dataset (add reference) consists of 3820 grayscale 227x227 JPEG images of the Mars surface. Each image is cropped from one of 168 larger images taken by the High Resolution Imaging Science Experiment (HiRise) camera onboard the Mars Reconnaisance Orbiter. Wagstaff et al created this dataset for the purpose of training a CNN to categorize landmarks on the Mars surface. The network could then be deployed to enable content-based searching of the images on NASA's Planetary Data System (PDS). (*** add a few image examples somewhere***)
+The HiRise Orbital Dataset consists of 3820 grayscale 227x227 JPEG images of the Mars surface. Each image is cropped from one of 168 larger images taken by the High Resolution Imaging Science Experiment (HiRise) camera onboard the Mars Reconnaisance Orbiter. Wagstaff et al created this dataset for the purpose of training a CNN to categorize landmarks on the Mars surface. The network could then be deployed to enable content-based searching of the images on NASA's Planetary Data System (PDS).
 
 The authors' final published network achieved 90% accuracy on their test set. Since the size of the dataset is relatively small, the authors used transfer learning. They fine-tuned AlexNet, a state-of-the-art CNN trained on 1.2 million images from 1000 classes (ImageNet) (***add citation to AlexNet paper***)
 
@@ -31,7 +31,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 import IPython
 ```
-
+<br>
 
 ## **Data Import and Preprocessing**
 
@@ -193,7 +193,7 @@ print(train_images.shape, val_images.shape, test_images.shape)
     (2674, 227, 227, 1) (573, 227, 227, 1) (573, 227, 227, 1)
 
 
-
+<br>
 
 ## **Define a Hyperparameter Space and a Model Building Function**
 
@@ -270,6 +270,10 @@ def build_model(hp):
     return model
 ```
 
+<br>
+
+## **Tune Hyperparameters**
+
 This function is used to initialize the random search tuner. We'll instruct the tuner select the hyperparameters that produce the highest validation accuracy during the tuning process. We'll tell it to try 40 different sets of hyperparameters, and repeat each trial three times for a higher degree of reliability.
 
 
@@ -305,9 +309,6 @@ tuner.search(train_images, train_labels,
              epochs=30,
              callbacks=[ClearTrainingOutput()])
 ```
-
-
-
 
 
 Now we retrieve the set of hyperparameters that achieved the highest performance during the tuning.
@@ -383,7 +384,10 @@ print('Optimizer: ', best_hp.get('optimizer'))
 
 ***Verbal description of model and hyperparameters...***
 
-## Training
+
+<br>
+
+## **Training**
 
 Now it is time to train the final model. Again, we pass an early stopping callback to optimize the number of epochs.
 
@@ -478,10 +482,11 @@ plt.show()
 
 *** comment on graphs ***
 
+<br>
 
-## Evaluation
+## **Evaluation**
 
-Now for the moment of truth: evaluating the model's accuracy on the test set.**bold text**
+Now for the moment of truth: evaluating the model's accuracy on the test set.
 
 
 ```python
@@ -494,6 +499,9 @@ print(test_accuracy)
 
 
 *** comment on performance, compare to Wagstaff ***
+
+
+<br>
 
 ## Prediction
 
