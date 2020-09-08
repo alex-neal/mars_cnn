@@ -530,7 +530,7 @@ print(test_accuracy)
     0.8446771502494812
 
 
-The accuracy on the test set is 85.5%. Let's have a look at Wagstaff et al's results for comparison. The following table from the original paper includes their results along with two baselines: random-choice guessing, and always selecting the "other" category, which is the most common.
+The accuracy on the test set is 84.5%. Let's have a look at Wagstaff et al's results for comparison. The following table from the original paper includes their results along with two baselines: random-choice guessing, and always selecting the most common "other" category.
 
 ![Wagstaff Results](mars_cnn_files/wagstaff_table.png)
 
