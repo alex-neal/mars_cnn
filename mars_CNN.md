@@ -1,11 +1,13 @@
 # Mars Surface Image Classification
+*by Alex Neal ([alexneal.net](https://alexneal.net)) on September 8, 2020*
 
+<br> 
 
-The HiRise Orbital Dataset [[1]](#1) consists of 3820 grayscale 227x227 JPEG images of the Mars surface. Each image is cropped from one of 168 larger images taken by the High Resolution Imaging Science Experiment (HiRise) camera onboard the Mars Reconnaisance Orbiter. Wagstaff et al created this dataset for the purpose of training a CNN to categorize landmarks on the Mars surface. The network could then be deployed to enable content-based searching of the images on NASA's Planetary Data System (PDS).
+The HiRise Orbital Dataset [[1]](#1) consists of 3820 grayscale JPEG images of the Mars surface. Each 227x227 pixel image is cropped from one of 168 larger images taken by the High Resolution Imaging Science Experiment (HiRise) camera onboard the Mars Reconnaisance Orbiter. Wagstaff et al created this dataset for the purpose of training a CNN to categorize landmarks such as craters and dunes on the Mars surface. The network could then be deployed to enable content-based searching of the images on NASA's Planetary Data System (PDS).
 
-The authors' final published network achieved 90% accuracy on their test set. Since the size of the dataset is relatively small, the authors used transfer learning. They fine-tuned AlexNet [[2]](#2), a state-of-the-art CNN trained on 1.2 million images from 1000 classes (ImageNet)
+The authors of the dataset fine-tuned the well-known AlexNet CNN [[2]](#2), which was initially trained on 1.2 million images belonging to 1000 different classes. This method of leveraging additional data, known as transfer learning, has proven effective in many computer vision applications. 
 
-For this experiment, we will test the effectiveness of the transfer learning approach by training a network from scratch using solely the HiRise dataset. We will tune hyperparameters by defining a hyperparameter space and performing a random search. The most effective set of hyperparameters from the search will be used in our final model.
+For this experiment, we will attempt to maximize the performance of a CNN trained from scratch, and compare this performance to Wagner et al's transfer learning approach. We will tune hyperparameters by defining a hyperparameter space and performing a random search. The most effective set of hyperparameters from the search will be used in our final model.
 
 
 We begin by importing the required modules. These include:
@@ -13,7 +15,7 @@ We begin by importing the required modules. These include:
 * Keras Tuner for optimizing hyperparameters
 * NumPy
 * matplotlib.pyplot for visualizations
-* A few other helpful utilities
+* Some other helpful utilities
 
 
 
@@ -31,6 +33,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 import IPython
 ```
+
 <br>
 
 ## **Data Import and Preprocessing**
@@ -106,7 +109,7 @@ test_images, test_labels = get_set(test)
     100%|██████████| 573/573 [00:00<00:00,  936.94it/s]
 
 
-Let's have a look at the range of pixel values in the data.
+Let's have a look at the range of pixel values in the image data.
 
 
 ```python
@@ -127,7 +130,7 @@ val_images = val_images/255.0
 test_images = test_images/255.0
 ```
 
-Using the image data and the previously defined class map, we can plot some of the images to get an idea of the types of images we are dealing with. 
+Using the image data and the previously defined class map, we can display some of the images along with the classes they belong to.
 
 
 ```python
@@ -147,7 +150,7 @@ plt.show()
 ![png](mars_cnn_files/mars_cnn_13_0.png)
 
 
-The edge category seems like it may be more common than the others. Let's take a look at the distribution of the labels in the training set. 
+It looks like the "other" category may be more common than the others. Let's take a look at the normalized distribution of the labels in each set.
 
 
 ```python
@@ -174,8 +177,10 @@ plt.show()
 
 ![png](mars_cnn_files/mars_cnn_15_0.png)
 
+Indeed, the majority of images fall into the "other" class, which is the label for landmarks that do not fit into any of the more explicit classes. Luckily, the relative class proportions in the validation and testing sets look about the same as those in the training set. This indicates that the validation and testing sets are sufficiently large, i.e. they are each acceptable representative samples of the whole dataset. 
 
-Before we can start training the neural net, there is one last step. If we look at the shape of the image data, we see that each example is a 227x227 array.
+
+Before we can start tuning and training, there is one last step. If we look at the shape of the image data, we see that each example is a 227x227 array.
 
 
 ```python
@@ -207,19 +212,19 @@ print(train_images.shape, val_images.shape, test_images.shape)
 
 ## **Define a Hyperparameter Space and a Model Building Function**
 
-
+The first step in using `keras tuner` is to define a hyperparameter space that can be searched. We'll use some of the established wisdom on CNN architecture, including the architecture of AlexNet, to inform the space definition.
 
 The first layer will be a convolutional layer with either 32, 64, 96, or 128 filters. The filter size for this layer will be either 3x3, 5x5, or 11x11, and the stride will be either 1 or 2. We will also allow for an even larger stride of 4 in cases where the 11x11 filter is chosen (The first layer of AlexNet consists of 11x11 filters with a stride of 4, so I wanted to make sure this combination was included in the search space). This layer is followed by a 2x2 max pool.
 
-The first convolutional layer will be followed by between one and four additional convulutional layers. These layers can also have either 32, 64, 96, or 128 filters. Filter size can be 3x3 or 5x5, and the stride will be 1. Only the final layer from this group will be followed by a max pool.
+The aforementioned layer will be followed by between one and four additional convolutional layers. These layers can also have either 32, 64, 96, or 128 filters. Filter size can be 3x3 or 5x5, and the stride will be 1. Only the final layer from this group will be followed by a max pool.
 
 There may be anywhere between one and four fully connected layers after the last max pool, and each of these layers can have a minimum of 64 and a maximum of 512 neurons. Additionally, each fully connected layer is optionally followed by a 50% dropout layer. 
 
-The final layer in the model is a softmax layer which will output the predicted probabilities for each class. 
+The final layer in the model is a 7 unit softmax layer which will output the predicted probabilities for each class. 
 
-We will also add two learning rates (0.001 and 0.0001) and two optimizer choices (Adam and RMSProp) to the hyperparameter space. These learning rates and optimizers have proven effective on this dataset during initial experiments.
+We will also add two learning rates (0.001 and 0.0001) and two optimizer choices (Adam and RMSProp) to the hyperparameter space. These learning rates and optimizers have proven effective on this problem during initial experiments.
 
-The following code block is model building function that defines the above hyperparemeter space for the `keras tuner`.
+The following code block is a model building function that defines the above hyperparemeter space for the `keras tuner`.
 
 
 
@@ -284,7 +289,7 @@ def build_model(hp):
 
 ## **Tune Hyperparameters**
 
-This function is used to initialize the random search tuner. We'll instruct the tuner select the hyperparameters that produce the highest validation accuracy during the tuning process. We'll tell it to try 40 different sets of hyperparameters, and repeat each trial three times for a higher degree of reliability.
+Now we can use our model building function to initialize the random search tuner. We'll instruct the tuner select the hyperparameters that produce the highest validation accuracy during the tuning process. The tuner will try 40 different sets of hyperparameters, and repeat each trial three times for a higher degree of result reliability.
 
 
 ```python
@@ -300,7 +305,7 @@ tuner = RandomSearch(
 # tuner.search_space_summary()
 ```
 
-This callback function will clear the output after each trial.
+`keras tuner` is quite verbose, so let's also define a quick callback to clear the output after each trial:
 
 
 ```python
@@ -310,7 +315,7 @@ class ClearTrainingOutput(keras.callbacks.Callback):
 
 ```
 
-Finally, we let the tuner work its magic. Each trial can be up to 30 epochs (in initial experiments, the network tended to converge in less than 20 epochs). We'll also pass an early stopping callback to halt training early if validation loss begins to increase.
+Finally, we begin tuning. In initial experiments, the network took between 20 and 30 epochs to minimize validation loss. We'll allow each trial to run for 30 epochs to ensure that each model has the opportunity to converge. 
 
 
 ```python
@@ -321,7 +326,7 @@ tuner.search(train_images, train_labels,
 ```
 
 
-Now we retrieve the set of hyperparameters that achieved the highest performance during the tuning.
+This tuning process took approximately two hours on a GPU hosted by Google Colab. Upon completion, we can retrieve the set of hyperparameters that achieved the highest performance:
 
 
 ```python
@@ -371,16 +376,13 @@ best_model.summary()
     _________________________________________________________________
 
 
-The summary above does not include the stride for the first convolutional layer, the filter sizes for all convolutional layers, the learning rate, or the optimizer. We can retrieve each of these hyperparemeter selections as follows:
+The summary above does not include the stride for the first convolutional layer, the filter sizes for all convolutional layers, the learning rate, or the optimizer. We can directly retrieve each of these hyperparemeter selections as follows:
 
 
 ```python
-
-# Get filter sizes
 for i in range(best_hp.get('num_conv_layers')+1):
   filter_size = best_hp.get('filtersize_' + str(i+1))
   print('Filter Size (conv layer {}): {}x{}'.format(i+1, filter_size, filter_size))
-
 print('Stride (conv layer 1): ', best_hp.get('strides_1'))
 print('Learning Rate: ', best_hp.get('learning_rate'))
 print('Optimizer: ', best_hp.get('optimizer'))
@@ -396,7 +398,7 @@ print('Optimizer: ', best_hp.get('optimizer'))
     Optimizer:  rmsprop
 
 
-The resulting network architecture is
+Our network will use the RMSprop optimizer with an initial learning rate of 0.0001. A layer-by-layer summary of the chosen architecture is:
 1. Input layer accepting single channel 2D arrays of size 227x227
 2. Convolutional layer with 32 11x11 filters and stride of 2
 3. 2x2 max pooling layer
@@ -477,13 +479,12 @@ history = best_model.fit(train_images, train_labels, epochs=30,
     84/84 [==============================] - 1s 17ms/step - loss: 0.2300 - accuracy: 0.9241 - val_loss: 0.5118 - val_accuracy: 0.8569
 
 
-*** comment on validation accuracy ***
+The early stopping function halted training after the 24th epoch. At this point, the training accuracy was 92.4%, and the validation accuracy was 85.7%.
 
-Let's visualize the training history. The following code, adapted from [Jason Brownlee's article](https://machinelearningmastery.com/display-deep-learning-model-training-history-in-keras/), plots loss and accuracy as a function of epochs for both the training and validation sets.
+Let's visualize the training history. The following code, adapted from an article by Jason Brownlee [[3]](#3), plots loss and accuracy as a function of epochs for both the training and validation sets.
 
 
 ```python
-
 plt.figure(figsize=(15,5))
 plt.subplot(1,2,1)
 plt.plot(history.history['accuracy'])
@@ -509,8 +510,7 @@ plt.show()
 
 ![png](mars_cnn_files/mars_cnn_36_0.png)
 
-
-*** comment on graphs ***
+Validation accuracy and loss both seem to level out and become more volatile after the 15th epoch. Training was halted before the validation loss began increasing, which suggests that this model is well-fit. 
 
 <br>
 
@@ -530,16 +530,17 @@ print(test_accuracy)
     0.8446771502494812
 
 
-*** comment on performance, compare to Wagstaff ***
+The accuracy on the test set is 85.5%. Let's have a look at Wagstaff et al's results for comparison. The following table from the original paper includes their results along with two baselines: random-choice guessing, and always selecting the "other" category, which is the most common.
+
 ![Wagstaff Results](mars_cnn_files/wagstaff_table.png)
 
-Our results of 92.4%, 85.7%, and 84.5% accuracy on our training, validation, and testing sets are slightly lower than Wagner et al.'s published results. However, the accuracy is still remarkably higher than the two baselines shown in the table. Additionally, our model is about 1/3 the size of AlexNet with 18 million parameters compared to AlexNet's 60 million. 
+Our results of 92.4%, 85.7%, and 84.5% accuracy on our training, validation, and testing sets are slightly lower than Wagner et al.'s published results. This was to be expected since our network is trained from scratch on solely this dataset. However, the accuracy is still remarkably higher than the two baselines. Additionally, our model is about 1/3 the size of Wagner et al's model, with 18 million parameters compared to AlexNet's 60 million. 
 
 <br>
 
 ## Prediction
 
-We'll conclude by visualizing the model's decisions. We pass the test image data to the model's `predict` function to get the predicted class probabilities for each example.
+We'll conclude by visualizing our model's decision-making. We pass the test image data to the model's `predict` function to get the predicted class probabilities for each example.
 
 
 ```python
@@ -553,7 +554,7 @@ To plot the images, we need to remove the extra channel dimension we added earli
 test_images_2d = test_images.reshape((test_images.shape[:-1]))
 ```
 
-Using code from [this TensorFlow tutorial](https://www.tensorflow.org/tutorials/keras/classification), we visualize the first 10 predictions.
+Using code from [this TensorFlow tutorial](https://www.tensorflow.org/tutorials/keras/classification), we visualize the first 20 predictions.
 
 
 ```python
@@ -607,7 +608,9 @@ plt.show()
 ![png](mars_cnn_files/mars_cnn_46_0.png)
 
 
-*** comment on predictions ***
+The model consistently classifies the most common image categories ("other" and "edge") correctly with a high degree of confidence. Multiple craters were also classified correctly. The network's mistakes are all bright or dark dunes that were misclassified as "other". 
+
+A row-normalized confusion matrix can provide more insight into the network's classification errors. 
 
 
 ```python
@@ -625,11 +628,14 @@ plt.show()
 
 ![png](mars_cnn_files/mars_cnn_48_0.png)
 
+The confusion matrix shows that the model classifies images from the more common categories ("other", "dark_dune", and "edge") quite effectively. There is room for significant improvement in identification of the other classes. Images in the "streak" class, for one, were classified incorrectly as "other" 100% of the time. The single best way to improve performance on these classes would be to increase the size of the dataset to include a greater number of examples from these classes for the model to learn from. As shown by Wagner et al, a transfer learning approach can also improve the overall performance by 5%. 
+
 <br>
 
 ## References
 
 <a id="1">[1]</a> Wagstaff, K., Y.Lu, Stanboli, A., Grimes, K., Gowda, T., & Padams, J. (2018). Deep Mars: CNN Classification of Mars Imagery for the PDS Imaging Atlas. In Conference on Innovative Applications of Artificial Intelligence.
 
-<a id="1">[2]</a> Krizhevsky, A.; Sutskever, I.; and Hinton, G. E. (2012). Imagenet Classification with Deep Convolutional Neural Networks. In Advances in Neural Information Processing Systems.
+<a id="2">[2]</a> Krizhevsky, A.; Sutskever, I.; and Hinton, G. E. (2012). Imagenet Classification with Deep Convolutional Neural Networks. In Advances in Neural Information Processing Systems.
 
+<a id="3">[3]</a> Brownlee, Jason. (2016). Display Deep Learning Model Training History in Keras. At https://machinelearningmastery.com/display-deep-learning-model-training-history-in-keras/
