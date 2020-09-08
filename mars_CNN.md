@@ -396,14 +396,27 @@ print('Optimizer: ', best_hp.get('optimizer'))
     Optimizer:  rmsprop
 
 
-***Verbal description of model and hyperparameters...***
+The resulting network architecture is
+1. Input layer accepting single channel 2D arrays of size 227x227
+2. Convolutional layer with 32 11x11 filters and stride of 2
+3. 2x2 max pooling layer
+4. Convolutional layer with 32 3x3 filters and stride of 1
+5. Convolutional layer with 96 5x5 filters and stride of 1
+6. 2x2 max pooling layer
+7. Fully connected layer with 320 neurons
+8. 50% dropout layer
+9. Fully connected layer with 320 neurons
+10. 50% dropout layer
+11. Fully connected layer with 384 neurons
+12. Fully connected layer with 192 neurons
+13. Output softmax layer with 7 units
 
 
 <br>
 
 ## **Training**
 
-Now it is time to train the final model. Again, we pass an early stopping callback to optimize the number of epochs.
+Now it is time to train the model. To prevent overfitting, we will pass an early stopping callback to halt training after 4 epochs with no improvement in validation loss.
 
 
 ```python
