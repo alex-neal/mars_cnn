@@ -1,9 +1,9 @@
 # Mars Surface Image Classification
 
 
-The HiRise Orbital Dataset consists of 3820 grayscale 227x227 JPEG images of the Mars surface. Each image is cropped from one of 168 larger images taken by the High Resolution Imaging Science Experiment (HiRise) camera onboard the Mars Reconnaisance Orbiter. Wagstaff et al created this dataset for the purpose of training a CNN to categorize landmarks on the Mars surface. The network could then be deployed to enable content-based searching of the images on NASA's Planetary Data System (PDS).
+The HiRise Orbital Dataset [[1]](#1) consists of 3820 grayscale 227x227 JPEG images of the Mars surface. Each image is cropped from one of 168 larger images taken by the High Resolution Imaging Science Experiment (HiRise) camera onboard the Mars Reconnaisance Orbiter. Wagstaff et al created this dataset for the purpose of training a CNN to categorize landmarks on the Mars surface. The network could then be deployed to enable content-based searching of the images on NASA's Planetary Data System (PDS).
 
-The authors' final published network achieved 90% accuracy on their test set. Since the size of the dataset is relatively small, the authors used transfer learning. They fine-tuned AlexNet, a state-of-the-art CNN trained on 1.2 million images from 1000 classes (ImageNet) (***add citation to AlexNet paper***)
+The authors' final published network achieved 90% accuracy on their test set. Since the size of the dataset is relatively small, the authors used transfer learning. They fine-tuned AlexNet [[2]](#2), a state-of-the-art CNN trained on 1.2 million images from 1000 classes (ImageNet)
 
 For this experiment, we will test the effectiveness of the transfer learning approach by training a network from scratch using solely the HiRise dataset. We will tune hyperparameters by defining a hyperparameter space and performing a random search. The most effective set of hyperparameters from the search will be used in our final model.
 
@@ -518,7 +518,9 @@ print(test_accuracy)
 
 
 *** comment on performance, compare to Wagstaff ***
+![Wagstaff Results](mars_cnn_files/wagstaff_table.png)
 
+Our results of 92.4%, 85.7%, and 84.5% accuracy on our training, validation, and testing sets are slightly lower than Wagner et al.'s published results. However, the accuracy is still remarkably higher than the two baselines shown in the table. Additionally, our model is about 1/3 the size of AlexNet with 18 million parameters compared to AlexNet's 60 million. 
 
 <br>
 
@@ -609,4 +611,12 @@ plt.show()
 *Output:*
 
 ![png](mars_cnn_files/mars_cnn_48_0.png)
+
+<br>
+
+## References
+
+<a id="1">[1]</a> Wagstaff, K., Y.Lu, Stanboli, A., Grimes, K., Gowda, T., & Padams, J. (2018). Deep Mars: CNN Classification of Mars Imagery for the PDS Imaging Atlas. In Conference on Innovative Applications of Artificial Intelligence.
+
+<a id="1">[2]</a> Krizhevsky, A.; Sutskever, I.; and Hinton, G. E. (2012). Imagenet Classification with Deep Convolutional Neural Networks. In Advances in Neural Information Processing Systems.
 
