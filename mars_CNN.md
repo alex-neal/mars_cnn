@@ -1,5 +1,4 @@
 # Mars Surface Image Classification
-## Optimizing CNN Hyperparameters with Hyperband
 
 
 The HiRise Orbital Dataset (add reference) consists of 3820 grayscale 227x227 JPEG images of the Mars surface. Each image is cropped from one of 168 larger images taken by the High Resolution Imaging Science Experiment (HiRise) camera onboard the Mars Reconnaisance Orbiter. Wagstaff et al created this dataset for the purpose of training a CNN to categorize landmarks on the Mars surface. The network could then be deployed to enable content-based searching of the images on NASA's Planetary Data System (PDS). (*** add a few image examples somewhere***)
@@ -54,9 +53,9 @@ The second file, `labels-map-proj.txt`, contains each image filename along with 
 
 
 ```python
-lines = urlopen('https://ajndata.s3.us-east-2.amazonaws.com/hirise/labels-map-proj.txt').read().decode('utf-8').strip().split('\n')
-#lines = file.readlines()
-#file.close()
+file = open('labels-map-proj.txt', 'r')
+lines = [line.strip() for line in file.readlines()]
+file.close()
 
 train, not_train = train_test_split(lines, train_size=0.7)
 val, test = train_test_split(not_train, test_size=0.5)
@@ -66,11 +65,7 @@ Next, we import the image data and store them and the labels in NumPy arrays.
 
 
 ```python
-img_url = 'https://ajndata.s3.us-east-2.amazonaws.com/hirise/map-proj/'
-
-def get_image(url):
-  image = Image.open(urlopen(url))
-  return np.array(image)
+img_path = 'map-proj/'
 
 def get_set(lines):
   images = []
@@ -78,7 +73,7 @@ def get_set(lines):
 
   for line in tqdm(lines):
     filename, label = line.split(' ')
-    images.append(get_image(img_url + filename))
+    images.append(np.array(Image.open(img_path + filename)
     labels.append(int(label))
 
   images = np.array(images)
@@ -100,23 +95,13 @@ test_images, test_labels = get_set(test)
 ```
 
     Importing training set...
-
-
-    100%|██████████| 2674/2674 [19:40<00:00,  2.26it/s]
-
-
+    100%|██████████| 2674/2674 [00:02<00:00,  922.92it/s]
     
     Importing validation set...
-
-
-    100%|██████████| 573/573 [04:12<00:00,  2.27it/s]
-
-
-    
+    100%|██████████| 573/573 [00:00<00:00,  945.97it/s]
+  
     Importing test set...
-
-
-    100%|██████████| 573/573 [04:12<00:00,  2.27it/s]
+    100%|██████████| 573/573 [00:00<00:00,  936.94it/s]
 
 
 Let's have a look at the range of pixel values in the data.
@@ -210,8 +195,7 @@ print(train_images.shape, val_images.shape, test_images.shape)
 
 
 
----
-# Define a Hyperparameter Space and a Model Building Function
+## **Define a Hyperparameter Space and a Model Building Function**
 
 
 
