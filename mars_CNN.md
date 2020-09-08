@@ -94,6 +94,8 @@ print("Importing test set...")
 test_images, test_labels = get_set(test)
 ```
 
+*Output:*
+
     Importing training set...
     100%|██████████| 2674/2674 [00:02<00:00,  922.92it/s]
     
@@ -110,6 +112,8 @@ Let's have a look at the range of pixel values in the data.
 ```python
 print(train_images.min(), train_images.max())
 ```
+
+*Output:*
 
     0 255
 
@@ -138,6 +142,7 @@ for i in range(15):
 plt.show()
 ```
 
+*Output:*
 
 ![png](mars_cnn_files/mars_cnn_13_0.png)
 
@@ -165,6 +170,7 @@ plot_class_dist(test_labels, 'Testing')
 plt.show()
 ```
 
+*Output:*
 
 ![png](mars_cnn_files/mars_cnn_15_0.png)
 
@@ -175,6 +181,8 @@ Before we can start training the neural net, there is one last step. If we look 
 ```python
 print(train_images.shape, val_images.shape, test_images.shape)
 ```
+
+*Output:*
 
     (2674, 227, 227) (573, 227, 227) (573, 227, 227)
 
@@ -189,6 +197,8 @@ test_images = test_images.reshape((test_images.shape[0],227,227,1))
 
 print(train_images.shape, val_images.shape, test_images.shape)
 ```
+
+*Output:*
 
     (2674, 227, 227, 1) (573, 227, 227, 1) (573, 227, 227, 1)
 
@@ -323,6 +333,8 @@ best_model.summary()
 
 ```
 
+*Output:*
+
     Model: "sequential"
     _________________________________________________________________
     Layer (type)                 Output Shape              Param #   
@@ -374,6 +386,8 @@ print('Learning Rate: ', best_hp.get('learning_rate'))
 print('Optimizer: ', best_hp.get('optimizer'))
 ```
 
+*Output:*
+
     Filter Size (conv layer 1): 11x11
     Filter Size (conv layer 2): 3x3
     Filter Size (conv layer 3): 5x5
@@ -397,6 +411,8 @@ history = best_model.fit(train_images, train_labels, epochs=30,
                 validation_data=(val_images, val_labels),
                 callbacks=[keras.callbacks.EarlyStopping(monitor='val_loss', patience=4)])
 ```
+
+*Output:*
 
     Epoch 1/30
     84/84 [==============================] - 2s 19ms/step - loss: 1.2772 - accuracy: 0.5774 - val_loss: 0.9578 - val_accuracy: 0.7068
@@ -476,6 +492,7 @@ plt.show()
 
 ```
 
+*Output:*
 
 ![png](mars_cnn_files/mars_cnn_36_0.png)
 
@@ -493,6 +510,8 @@ Now for the moment of truth: evaluating the model's accuracy on the test set.
 test_loss, test_accuracy = best_model.evaluate(test_images, test_labels)
 print(test_accuracy)
 ```
+
+*Output:*
 
     18/18 [==============================] - 0s 8ms/step - loss: 0.6808 - accuracy: 0.8447
     0.8446771502494812
@@ -568,6 +587,7 @@ plt.show()
   
 ```
 
+*Output:*
 
 ![png](mars_cnn_files/mars_cnn_46_0.png)
 
@@ -586,6 +606,7 @@ disp = disp.plot(cmap='Blues', xticks_rotation='vertical')
 plt.show()
 ```
 
+*Output:*
 
 ![png](mars_cnn_files/mars_cnn_48_0.png)
 
