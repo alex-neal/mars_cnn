@@ -648,4 +648,4 @@ The confusion matrix shows that the model classifies images from the more common
 
 <a id="2">[2]</a> Krizhevsky, A.; Sutskever, I.; and Hinton, G. E. (2012). Imagenet Classification with Deep Convolutional Neural Networks. In Advances in Neural Information Processing Systems.
 
-<a id="3">[3]</a> Brownlee, Jason. (2016). Display Deep Learning Model Training History in Keras. At https://machinelearningmastery.com/display-deep-learning-model-training-history-in-keras/
+<a id="3">[3]</a> Brownlee, Jason. (2016). Display Deep Learning Model Training History in Keras. At [https://machinelearningmastery.com/display-deep-learning-model-training-history-in-keras/](https://machinelearningmastery.com/display-deep-learning-model-training-history-in-keras/)
