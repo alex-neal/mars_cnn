@@ -1,22 +1,22 @@
-# Mars Surface Image Classification
+# Mars Image Classification
 *by Alex Neal ([alexneal.net](https://alexneal.net)) on September 8, 2020*
 
 <br> 
 
-The HiRise Orbital Dataset [[1]](#1) consists of 3820 grayscale JPEG images of the Mars surface. Each 227x227 pixel image is cropped from one of 168 larger images taken by the High Resolution Imaging Science Experiment (HiRise) camera onboard the Mars Reconnaisance Orbiter. Wagstaff et al created this dataset for the purpose of training a CNN to categorize landmarks such as craters and dunes on the Mars surface. The network could then be deployed to enable content-based searching of the images on NASA's Planetary Data System (PDS).
+In *Deep Mars: CNN Classification of Mars Imagery for the PDS Imaging Atlas* [[1]](#1), Wagstaff et al. introduced the HiRise Orbital Dataset for the purpose of training a CNN to categorize Martian landmarks, such as craters and dunes. The dataset consists of 3820 grayscale JPEG images of the Mars surface. Each 227x227 pixel image is cropped from one of 168 larger images taken by a high resolution camera onboard the Mars Reconnaisance Orbiter.
 
-The authors of the dataset fine-tuned the well-known AlexNet CNN [[2]](#2), which was initially trained on 1.2 million images belonging to 1000 different classes. This method of leveraging additional data, known as transfer learning, has proven effective in many computer vision applications. 
+The authors' published model is a fine-tuned version of the well-known AlexNet CNN [[2]](#2), which was initially trained on 1.2 million images belonging to 1000 different classes. This method of leveraging additional data, known as transfer learning, has proven effective in computer vision applications. 
 
 For this experiment, we will attempt to maximize the performance of a CNN trained from scratch, and compare this performance to Wagner et al's transfer learning approach. We will tune hyperparameters by defining a hyperparameter space and performing a random search. The most effective set of hyperparameters from the search will be used in our final model.
 
+---
 
-We begin by importing the required modules. These include:
+We begin by importing the modules we will be using. These include:
 * Tensorflow and Keras for building and training the CNN
 * Keras Tuner for optimizing hyperparameters
 * NumPy
 * matplotlib.pyplot for visualizations
 * Some other helpful utilities
-
 
 
 ```python
@@ -26,7 +26,6 @@ from kerastuner.tuners import RandomSearch
 import numpy as np
 import matplotlib.pyplot as plt
 
-from urllib.request import urlopen
 from PIL import Image
 from tqdm import tqdm
 from sklearn.model_selection import train_test_split
@@ -52,7 +51,9 @@ class_map = {0: 'other',
              6: 'edge'}
 ```
 
-The second file, `labels-map-proj.txt`, contains each image filename along with its correspondong class label, separated by a space. The first task is to partition these lines randomly into the training, validation, and test sets. We use the same proportions as the original authors: 70%, 15%, and 15% for the training, validation, and test sets, respectively.
+<br>
+
+The second file, `labels-map-proj.txt`, contains space-separated image filenames and correspondong class labels. The first task is to partition these lines randomly into training, validation, and test sets. We use the same proportions as the original authors: 70%, 15%, and 15% for the training, validation, and test sets, respectively.
 
 
 ```python
@@ -64,8 +65,9 @@ train, not_train = train_test_split(lines, train_size=0.7)
 val, test = train_test_split(not_train, test_size=0.5)
 ```
 
-Next, we import the image data and store them and the labels in NumPy arrays.
+<br>
 
+Next, we import the image data and store them and the labels in NumPy arrays.
 
 ```python
 img_path = 'map-proj/'
@@ -108,6 +110,7 @@ test_images, test_labels = get_set(test)
     Importing test set...
     100%|██████████| 573/573 [00:00<00:00,  936.94it/s]
 
+<br>
 
 Let's have a look at the range of pixel values in the image data.
 
@@ -130,8 +133,9 @@ val_images = val_images/255.0
 test_images = test_images/255.0
 ```
 
-Using the image data and the previously defined class map, we can display some of the images along with the classes they belong to.
+<br>
 
+Using the image data and the previously defined class map, we can display some of the images along with the classes they belong to.
 
 ```python
 plt.figure(figsize=(10,10))
@@ -177,8 +181,9 @@ plt.show()
 
 ![png](mars_cnn_files/mars_cnn_15_0.png)
 
-Indeed, the majority of images fall into the "other" class, which is the label for landmarks that do not fit into any of the more explicit classes. Luckily, the relative class proportions in the validation and testing sets look about the same as those in the training set. This indicates that the validation and testing sets are sufficiently large, i.e. they are each acceptable representative samples of the whole dataset. 
+Indeed, the majority of images fall into the "other" class, which is the label for landmarks that do not fit into any of the more explicit classes. The relative class proportions in the validation and testing sets look about the same as those in the training set. This indicates that the validation and testing sets are sufficiently large, i.e. they are each acceptable representative samples of the whole dataset. 
 
+<br>
 
 Before we can start tuning and training, there is one last step. If we look at the shape of the image data, we see that each example is a 227x227 array.
 
@@ -289,7 +294,7 @@ def build_model(hp):
 
 ## **Tune Hyperparameters**
 
-Now we can use our model building function to initialize the random search tuner. We'll instruct the tuner select the hyperparameters that produce the highest validation accuracy during the tuning process. The tuner will try 40 different sets of hyperparameters, and repeat each trial three times for a higher degree of result reliability.
+Now we can use our model building function to initialize the random search tuner. We'll instruct the tuner to select the hyperparameters that produce the highest validation accuracy during the tuning process. The tuner will try 40 different sets of hyperparameters, and repeat each trial three times for a higher degree of result reliability.
 
 
 ```python
@@ -305,6 +310,8 @@ tuner = RandomSearch(
 # tuner.search_space_summary()
 ```
 
+<br>
+
 `keras tuner` is quite verbose, so let's also define a quick callback to clear the output after each trial:
 
 
@@ -314,6 +321,8 @@ class ClearTrainingOutput(keras.callbacks.Callback):
     IPython.display.clear_output(wait = True)
 
 ```
+
+<br>
 
 Finally, we begin tuning. In initial experiments, the network took between 20 and 30 epochs to minimize validation loss. We'll allow each trial to run for 30 epochs to ensure that each model has the opportunity to converge. 
 
@@ -326,7 +335,7 @@ tuner.search(train_images, train_labels,
 ```
 
 
-This tuning process took approximately two hours on a GPU hosted by Google Colab. Upon completion, we can retrieve the set of hyperparameters that achieved the highest performance:
+This tuning process took approximately two hours on a GPU hosted by Google Colab. After completion, we can retrieve the set of hyperparameters that achieved the highest performance:
 
 
 ```python
@@ -398,7 +407,7 @@ print('Optimizer: ', best_hp.get('optimizer'))
     Optimizer:  rmsprop
 
 
-Our network will use the RMSprop optimizer with an initial learning rate of 0.0001. A layer-by-layer summary of the chosen architecture is:
+So, our network will use the RMSprop optimizer with an initial learning rate of 0.0001. A layer-by-layer summary of the chosen architecture is:
 1. Input layer accepting single channel 2D arrays of size 227x227
 2. Convolutional layer with 32 11x11 filters and stride of 2
 3. 2x2 max pooling layer
@@ -418,7 +427,7 @@ Our network will use the RMSprop optimizer with an initial learning rate of 0.00
 
 ## **Training**
 
-Now it is time to train the model. To prevent overfitting, we will pass an early stopping callback to halt training after 4 epochs with no improvement in validation loss.
+Having established the hyperparameters, we can now train our final network. To prevent overfitting, we will pass an early stopping callback to halt training after 4 epochs of no validation loss improvement.
 
 
 ```python
@@ -530,11 +539,11 @@ print(test_accuracy)
     0.8446771502494812
 
 
-The accuracy on the test set is 84.5%. Let's have a look at Wagstaff et al's results for comparison. The following table from the original paper includes their results along with two baselines: random-choice guessing, and always selecting the most common "other" category.
+The accuracy on the test set is 84.5%. Let's have a look at Wagstaff et al.'s results for comparison. The following table from the original paper includes their results along with two baselines: random-choice guessing, and always selecting the most common "other" category.
 
 ![Wagstaff Results](mars_cnn_files/wagstaff_table.png)
 
-Our results of 92.4%, 85.7%, and 84.5% accuracy on our training, validation, and testing sets are slightly lower than Wagner et al.'s published results. This was to be expected since our network is trained from scratch on solely this dataset. However, the accuracy is still remarkably higher than the two baselines. Additionally, our model is about 1/3 the size of Wagner et al's model, with 18 million parameters compared to AlexNet's 60 million. 
+Our results of 92.4%, 85.7%, and 84.5% accuracy on our training, validation, and testing sets are slightly lower than Wagner et al.'s published results. This was to be expected since our network is trained from scratch on solely this dataset. However, our accuracy is still remarkably higher than the two baselines. Additionally, our model is about 1/3 the size of Wagner et al.'s model, with 18 million parameters compared to AlexNet's 60 million. 
 
 <br>
 
@@ -553,6 +562,8 @@ To plot the images, we need to remove the extra channel dimension we added earli
 ```python
 test_images_2d = test_images.reshape((test_images.shape[:-1]))
 ```
+
+<br>
 
 Using code from [this TensorFlow tutorial](https://www.tensorflow.org/tutorials/keras/classification), we visualize the first 20 predictions.
 
@@ -607,8 +618,9 @@ plt.show()
 
 ![png](mars_cnn_files/mars_cnn_46_0.png)
 
+The network consistently classifies the most common categories ("other" and "edge") correctly with a high degree of confidence. Multiple craters were also classified correctly. The network's mistakes in this sample are all bright or dark dunes that were misclassified as "other." The strategy, it seems, is "when in doubt, choose the most common class."
 
-The model consistently classifies the most common image categories ("other" and "edge") correctly with a high degree of confidence. Multiple craters were also classified correctly. The network's mistakes are all bright or dark dunes that were misclassified as "other". 
+<br>
 
 A row-normalized confusion matrix can provide more insight into the network's classification errors. 
 
@@ -628,7 +640,7 @@ plt.show()
 
 ![png](mars_cnn_files/mars_cnn_48_0.png)
 
-The confusion matrix shows that the model classifies images from the more common categories ("other", "dark_dune", and "edge") quite effectively. There is room for significant improvement in identification of the other classes. Images in the "streak" class, for one, were classified incorrectly as "other" 100% of the time. The single best way to improve performance on these classes would be to increase the size of the dataset to include a greater number of examples from these classes for the model to learn from. As shown by Wagner et al, a transfer learning approach can also improve the overall performance by 5%. 
+The confusion matrix shows that the model classifies images from the more common categories ("other", "dark_dune", and "edge") quite effectively. There is room for significant improvement in identification of the other classes. Images in the "streak" class, for one, were classified incorrectly as "other" 100% of the time. The single best way to improve performance on these classes would be to increase the size of the dataset to include a greater number of examples from these classes for the network to learn from. Otherwise, transfer learning is probably the best known method for improving performance, as demonstrated by Wagner et al.
 
 <br>
 
