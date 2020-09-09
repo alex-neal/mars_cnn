@@ -622,7 +622,6 @@ The network consistently classifies the most common categories ("other" and "edg
 
 A row-normalized confusion matrix can provide more insight into the network's classification errors. 
 
-
 ```python
 pred_labels = predictions.argmax(axis=1)
 
