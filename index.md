@@ -342,9 +342,7 @@ This tuning process took approximately two hours on a GPU hosted by Google Colab
 best_hp = tuner.get_best_hyperparameters()[0]
 
 best_model = tuner.hypermodel.build(best_hp)
-
 best_model.summary()
-
 ```
 
 *Output:*
@@ -519,7 +517,7 @@ plt.show()
 
 ![png](mars_cnn_files/mars_cnn_36_0.png)
 
-Validation accuracy and loss both seem to level out and become more volatile after the 15th epoch. Training was halted before the validation loss began increasing, which suggests that this model is well-fit. 
+Validation accuracy and loss both seem to level out and become more volatile after the 15th epoch. Training was halted before any significant increase in validation loss, which suggests that this model is well-fit. 
 
 <br>
 
@@ -543,7 +541,7 @@ The accuracy on the test set is 84.5%. Let's have a look at Wagstaff et al.'s re
 
 ![Wagstaff Results](mars_cnn_files/wagstaff_table.png)
 
-Our results of 92.4%, 85.7%, and 84.5% accuracy on our training, validation, and testing sets are slightly lower than Wagner et al.'s published results. This was to be expected since our network is trained from scratch on solely this dataset. However, our accuracy is still remarkably higher than the two baselines. Additionally, our model is about 1/3 the size of Wagner et al.'s model, with 18 million parameters compared to AlexNet's 60 million. 
+**Our results of 92.4%, 85.7%, and 84.5% accuracy on our training, validation, and testing sets are slightly lower than Wagner et al.'s published results.** This was to be expected since our network is trained from scratch on solely this dataset. However, our accuracy is still remarkably higher than the two baselines. Additionally, our model is about 1/3 the size of Wagner et al.'s model, with 18 million parameters compared to AlexNet's 60 million. 
 
 <br>
 
