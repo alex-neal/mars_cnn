@@ -9,7 +9,7 @@ The authors' published model is a fine-tuned version of the well-known AlexNet C
 
 For this experiment, we will attempt to maximize the performance of a CNN trained from scratch, and compare this performance to Wagner et al's transfer learning approach. We will tune hyperparameters by defining a hyperparameter space and performing a random search. The most effective set of hyperparameters from the search will be used in our final model.
 
----
+#
 
 We begin by importing the modules we will be using. These include:
 * Tensorflow and Keras for building and training the CNN
