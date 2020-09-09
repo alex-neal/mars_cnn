@@ -637,7 +637,7 @@ plt.show()
 
 ![png](mars_cnn_files/mars_cnn_48_0.png)
 
-The confusion matrix shows that the model classifies images from the more common categories ("other", "dark_dune", and "edge") quite effectively. There is room for significant improvement in identification of the other classes. Images in the "streak" class, for one, were classified incorrectly as "other" 100% of the time. The single best way to improve performance on these classes would be to increase the size of the dataset to include a greater number of examples from these classes for the network to learn from. Otherwise, transfer learning is probably the best known method for improving performance, as demonstrated by Wagner et al.
+The confusion matrix shows that the model classifies images from the more common categories ("other", "dark_dune", and "edge") quite effectively. There is room for significant improvement in identification of the other classes. Images in the "streak" class, for one, were classified incorrectly as "other" 100% of the time. The single best way to improve performance on these less common classes would be to increase their representation in the training set. Otherwise, transfer learning is probably the best known method for improving overall performance, as demonstrated by Wagner et al.
 
 <br>
 
