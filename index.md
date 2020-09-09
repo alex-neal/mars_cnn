@@ -229,7 +229,7 @@ The final layer in the model is a 7 unit softmax layer which will output the pre
 
 We will also add two learning rates (0.001 and 0.0001) and two optimizer choices (Adam and RMSProp) to the hyperparameter space. These learning rates and optimizers have proven effective on this problem during initial experiments.
 
-The following code block is a model building function that defines the above hyperparemeter space for the `keras tuner`.
+The following code block is a model building function that defines the above hyperparameter space for the `keras tuner`.
 
 
 
@@ -385,7 +385,7 @@ best_model.summary()
     _________________________________________________________________
 
 
-The summary above does not include the stride for the first convolutional layer, the filter sizes for all convolutional layers, the learning rate, or the optimizer. We can directly retrieve each of these hyperparemeter selections as follows:
+The summary above does not include the stride for the first convolutional layer, the filter sizes for all convolutional layers, the learning rate, or the optimizer. We can directly retrieve each of these hyperparameter selections as follows:
 
 
 ```python
