@@ -537,11 +537,11 @@ print(test_accuracy)
     0.8446771502494812
 
 
-The accuracy on the test set is 84.5%. Let's have a look at Wagstaff et al.'s results for comparison. The following table from the original paper includes their results along with two baselines: random-choice guessing, and always selecting the most common "other" category.
+The accuracy on the test set is 84.5%. Let's have a look at the Wagstaff et al. results for comparison. The following table from the original paper includes their results along with two baselines: random-choice guessing, and always selecting the most common "other" category.
 
 ![Wagstaff Results](mars_cnn_files/wagstaff_table.png)
 
-**Our results of 92.4%, 85.7%, and 84.5% accuracy on our training, validation, and testing sets are slightly lower than Wagner et al.'s published results.** This was to be expected since our network is trained from scratch on solely this dataset. However, our accuracy is still remarkably higher than the two baselines. Additionally, our model is about 1/3 the size of Wagner et al.'s model, with 18 million parameters compared to AlexNet's 60 million. 
+**Our results of 92.4%, 85.7%, and 84.5% accuracy on our training, validation, and testing sets are slightly lower than the published results of Wagstaff et al.** This was to be expected since our network is trained from scratch on solely this dataset. However, our accuracy is still remarkably higher than the two baselines. Additionally, our model is about 1/3 the size of the Wagner et al. model, with 18 million parameters compared to AlexNet's 60 million. 
 
 <br>
 
