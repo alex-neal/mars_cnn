@@ -541,7 +541,7 @@ The accuracy on the test set is 84.5%. Let's have a look at the Wagstaff et al. 
 
 ![Wagstaff Results](mars_cnn_files/wagstaff_table.png)
 
-**Our results of 92.4%, 85.7%, and 84.5% accuracy on our training, validation, and test sets are a bit lower than the published results of Wagstaff et al.** This was to be expected since they used transfer learning and we did not. Despite that, our network is still an effective predictor with accuracy taht is remarkably higher than the two baselines. It is also only about 1/3 the size of the Wagner et al. model, with 18 million parameters compared to AlexNet's 60 million. 
+**Our results of 92.4%, 85.7%, and 84.5% accuracy on our training, validation, and test sets are a bit lower than the published results of Wagstaff et al.** This was to be expected since they used transfer learning and we did not. Despite that, our network is an effective predictor with accuracy that is remarkably higher than the two baselines. It is also only about 1/3 the size of the Wagner et al. model, with 18 million parameters compared to AlexNet's 60 million. 
 
 <br>
 
