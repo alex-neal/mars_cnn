@@ -7,7 +7,7 @@ In *Deep Mars: CNN Classification of Mars Imagery for the PDS Imaging Atlas* [[1
 
 The authors' published model is a fine-tuned version of the well-known AlexNet CNN [[2]](#2), which was initially trained on 1.2 million images belonging to 1000 different classes. This method of leveraging additional data, known as transfer learning, has proven effective in computer vision applications. 
 
-For this experiment, we will attempt to maximize the performance of a CNN trained from scratch, and compare this performance to Wagner et al's transfer learning approach. We will tune hyperparameters by defining a hyperparameter space and performing a random search. The most effective set of hyperparameters from the search will be used in our final model.
+For this experiment, we will attempt to maximize the performance of a CNN trained from scratch, and compare this performance to Wagstaff et al's transfer learning approach. We will tune hyperparameters by defining a hyperparameter space and performing a random search. The most effective set of hyperparameters from the search will be used in our final model.
 
 <br>
 
@@ -541,7 +541,7 @@ The accuracy on the test set is 84.5%. Let's have a look at the Wagstaff et al. 
 
 ![Wagstaff Results](mars_cnn_files/wagstaff_table.png)
 
-**Our results of 92.4%, 85.7%, and 84.5% accuracy on our training, validation, and test sets are a bit lower than the published results of Wagstaff et al.** This was to be expected since they used transfer learning and we did not. Despite that, our network is an effective predictor with accuracy that is remarkably higher than the two baselines. It is also only about 1/3 the size of the Wagner et al. model, with 18 million parameters compared to AlexNet's 60 million. 
+**Our results of 92.4%, 85.7%, and 84.5% accuracy on our training, validation, and test sets are a bit lower than the published results of Wagstaff et al.** This was to be expected since they used transfer learning and we did not. Despite that, our network is an effective predictor with accuracy that is remarkably higher than the two baselines. It is also only about 1/3 the size of the Wagstaff et al. model, with 18 million parameters compared to AlexNet's 60 million. 
 
 <br>
 
@@ -637,7 +637,7 @@ plt.show()
 
 ![png](mars_cnn_files/mars_cnn_48_0.png)
 
-The confusion matrix shows that the model classifies images from the more common categories ("other", "dark_dune", and "edge") quite effectively. There is room for significant improvement in identification of the other classes. Images in the "streak" class, for one, were classified incorrectly as "other" 100% of the time. The single best way to improve performance on these less common classes would be to increase their representation in the training set. Otherwise, transfer learning is probably the best known method for improving overall performance, as demonstrated by Wagner et al.
+The confusion matrix shows that the model classifies images from the more common categories ("other", "dark_dune", and "edge") quite effectively. There is room for significant improvement in identification of the other classes. Images in the "streak" class, for one, were classified incorrectly as "other" 100% of the time. The single best way to improve performance on these less common classes would be to increase their representation in the training set. Otherwise, transfer learning is probably the best known method for improving overall performance, as demonstrated by Wagstaff et al.
 
 <br>
 
